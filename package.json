@@ -1,10 +1,37 @@
 {
-    "name": "hermes",
+    "name": "@hectortav/hermes",
     "version": "1.0.0",
-    "main": "index.js",
-    "license": "MIT",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "license": "Apache-2.0",
+    "files": [
+        "dist/**/*"
+    ],
+    "keywords": [
+        "queue",
+        "queues",
+        "persistent",
+        "redis",
+        "reload",
+        "restart",
+        "runner",
+        "schedule",
+        "scheduler",
+        "task",
+        "tasker",
+        "timer",
+        "timeout"
+    ],
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/needit-gr/hermes.git"
+    },
+    "bugs": {
+        "url": "https://github.com/needit-gr/hermes/issues"
+    },
+    "homepage": "https://github.com/needit-gr/hermes",
     "scripts": {
-        "build": "tsc --project ./",
+        "build": "tsc --declaration --project ./",
         "start": "node dist/index.js",
         "dev": "concurrently --kill-others \"tsc -w\" \"nodemon dist/index.js\"",
         "lint": "eslint . --ext .js,.ts --fix",

@@ -6,9 +6,9 @@ interface HermesConstructor {
     db?: number;
 }
 
-class Hermes {
+export class Hermes {
     private redis: Redis;
-    private signature: string = "hermes";
+    private signature = "hermes";
     private listener: Redis;
     private handlers: Record<string, (args: unknown) => unknown>;
 
@@ -31,11 +31,6 @@ class Hermes {
             if (message.startsWith(`${this.signature}:`)) {
                 this.execute(message);
             }
-        });
-
-        this.addHandler({
-            name: "console_log",
-            func: ({ message }: { message: string }) => console.log(message),
         });
     }
 
@@ -97,7 +92,7 @@ class Hermes {
     // TODO: cleanup
 
     async execute(key: string) {
-        const handler = new RegExp(`${this.signature}\:(.*)__`, "g").exec(key);
+        const handler = new RegExp(`${this.signature}:(.*)__`, "g").exec(key);
         const args = JSON.parse(await this.redis.get(`shadow:${key}`));
         if (this.handlers[handler[1]] === undefined) {
             throw new Error(`ERROR: Handler "${handler[1]}" does not exist.`);
@@ -127,21 +122,3 @@ class Hermes {
         this.redis.del(`shadow:${key}`);
     }
 }
-
-export default Hermes;
-
-const hermes = new Hermes({
-    host: "127.0.0.1",
-    port: 6379,
-});
-
-const main = async () => {
-    hermes.schedule({
-        handler: "console_log",
-        id: 13,
-        expiration: 5,
-        args: { message: "hello world" },
-    });
-};
-
-main();
