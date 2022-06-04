@@ -57,13 +57,13 @@ export class Hermes {
             `${this.signature}:${handler}__${id}`,
             "",
             "EX",
-            expiration
+            Math.round(expiration)
         );
         this.redis.set(
             `shadow:${this.signature}:${handler}__${id}`,
             JSON.stringify(args),
             "EX",
-            expiration + 60
+            Math.round(expiration) + 60
         );
     }
 
@@ -86,9 +86,6 @@ export class Hermes {
         this.schedule({ handler, args, id, expiration: diffInSeconds });
     }
 
-    // TODO: reschedule
-    // TODO: schedule at
-    // TODO: cancel
     // TODO: cleanup
 
     async execute(key: string) {
@@ -101,13 +98,7 @@ export class Hermes {
         this.redis.del(`shadow:${key}`);
     }
 
-    addHandler({
-        name,
-        func,
-    }: {
-        name: string;
-        func: (args: unknown) => unknown;
-    }) {
+    addHandler({ name, func }: { name: string; func: (args: any) => void }) {
         if (name.includes("__")) {
             throw new Error(`ERROR: Handler cannot contain "__".`);
         }
