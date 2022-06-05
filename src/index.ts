@@ -1,8 +1,8 @@
 import Redis from "ioredis";
 
 interface HermesConstructor {
-    host: string;
-    port: number;
+    host?: string;
+    port?: number;
     db?: number;
 }
 
@@ -12,7 +12,11 @@ export class Hermes {
     private listener: Redis;
     private handlers: Record<string, (args: unknown) => unknown>;
 
-    constructor({ host, port, db = 1 }: HermesConstructor) {
+    constructor({
+        host = "127.0.0.1",
+        port = 6379,
+        db = 0,
+    }: HermesConstructor) {
         const initRedis = (): Redis =>
             new Redis({
                 host,
@@ -86,8 +90,6 @@ export class Hermes {
         this.schedule({ handler, args, id, expiration: diffInSeconds });
     }
 
-    // TODO: cleanup
-
     async execute(key: string) {
         const handler = new RegExp(`${this.signature}:(.*)__`, "g").exec(key);
         const args = JSON.parse(await this.redis.get(`shadow:${key}`));
@@ -108,7 +110,8 @@ export class Hermes {
         this.handlers[name] = func;
     }
 
-    cancel(key: string) {
+    cancel({ handler, id }: { handler: string; id: string }) {
+        const key: string = `${this.signature}:${handler}__${id}`;
         this.redis.del(key);
         this.redis.del(`shadow:${key}`);
     }
