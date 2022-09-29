@@ -1,6 +1,6 @@
 {
     "name": "@hectortav/hermes",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Hermes is a minimal Node.js job scheduler. Uses Redis to ensure reliability and job persistence between reloads and restarts. Hermes uses Typescript by default.",
     "author": "Ektoras Tavoularis @hectortav",
     "main": "dist/index.js",
