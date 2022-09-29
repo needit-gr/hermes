@@ -38,6 +38,11 @@ export class Hermes {
         });
     }
 
+    close() {
+        this.redis.disconnect();
+        this.listener.disconnect();
+    }
+
     async schedule({
         handler,
         args,
@@ -53,7 +58,8 @@ export class Hermes {
         if (handler.includes("__")) {
             throw new Error(`ERROR: Handler cannot contain "__".`);
         }
-        if (this.handlers[handler] === undefined) {
+
+        if (this.handlers?.[handler] === undefined) {
             throw new Error(`ERROR: Handler "${handler}" does not exist.`);
         }
         /************/
@@ -90,7 +96,7 @@ export class Hermes {
         this.schedule({ handler, args, id, expiration: diffInSeconds });
     }
 
-    async execute(key: string) {
+    private async execute(key: string) {
         const handler = new RegExp(`${this.signature}:(.*)__`, "g").exec(key);
         const args = JSON.parse(await this.redis.get(`shadow:${key}`));
         if (this.handlers[handler[1]] === undefined) {
